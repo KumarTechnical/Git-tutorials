@@ -1,2 +1,49 @@
-this is 2 version control system.
-Another code is to the file for testing. this is mera commit jisse
+ChatGPT Prompt : date and ip address user ka track karna h through fs module
+
+Steps to Implement:
+Create a Server: Use Node.js to create a server with the http module.
+Capture the User's IP Address: Extract the IP address from the request object.
+Record Date and Time: Use JavaScript's Date object to get the current date and time.
+Write to a File: Use the fs module to log this information into a file.
+
+
+
+const http = require('http');
+const fs = require('fs');
+const path = require('path');
+
+// Function to log user details
+function logUserDetails(ipAddress) {
+  const currentDate = new Date().toISOString();
+  const logData = `Date: ${currentDate}, IP Address: ${ipAddress}\n`;
+
+  // Append log data to a file
+  const logFilePath = path.join(__dirname, 'user_logs.txt');
+  fs.appendFile(logFilePath, logData, (err) => {
+    if (err) {
+      console.error('Error writing to file:', err);
+    } else {
+      console.log('User details logged:', logData);
+    }
+  });
+}
+
+// Create a server
+const server = http.createServer((req, res) => {
+  // Extract user's IP address
+  const ipAddress =
+    req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'Unknown IP';
+
+  // Log details
+  logUserDetails(ipAddress);
+
+  // Send a response
+  res.writeHead(200, { 'Content-Type': 'text/plain' });
+  res.end('Your visit has been logged.\n');
+});
+
+// Start the server
+const PORT = 3000;
+server.listen(PORT, () => {
+  console.log(`Server running at http://localhost:${PORT}/`);
+});
